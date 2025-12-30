@@ -11,7 +11,7 @@ This application provides a hands-on visualization of the RAG (Retrieval-Augment
 
 <br>
 
-**Link to live app:** [STREAMLIT LINK PLACEHOLDER]
+[Link to Streamlit App](https://transcript-to-chat-pbzjqwpjhnfzxedlyt3hf8.streamlit.app/)
 
 <br>
 
