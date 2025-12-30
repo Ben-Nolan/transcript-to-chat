@@ -1,5 +1,5 @@
 [project]
-name = "rag-playground"
+name = "transcript-to-chat"
 version = "0.1.0"
 description = "Interactive demonstration of a simple RAG system"
 authors = [
@@ -21,6 +21,8 @@ dependencies = [
     "langchain-huggingface (>=1.2.0,<2.0.0)",
 ]
 
+[tool.poetry]
+package-mode = false
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
