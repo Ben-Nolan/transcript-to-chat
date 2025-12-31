@@ -1,4 +1,5 @@
 import re
+import streamlit as st
 from typing import NamedTuple
 
 from youtube_transcript_api import (
@@ -7,7 +8,7 @@ from youtube_transcript_api import (
     YouTubeTranscriptApi,
 )
 from youtube_transcript_api.formatters import TextFormatter
-
+from youtube_transcript_api.proxies import WebshareProxyConfig
 
 class TranscriptResponse(NamedTuple):
     text: str
@@ -30,7 +31,12 @@ def get_transcript_text(url: str) -> TranscriptResponse:
     if not video_id:
         raise ValueError("Invalid Youtube URL provided.")
 
-    yt = YouTubeTranscriptApi()
+    yt = YouTubeTranscriptApi(
+        proxy_config=WebshareProxyConfig(
+            proxy_username=st.secrets["WEBSHARE_PROXY_USERNAME"],
+            proxy_password=st.secrets["WEBSHARE_PROXY_PASSWORD"]
+        )
+    )
 
     try:
         transcript_list = yt.list(video_id)
