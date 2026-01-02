@@ -18,16 +18,6 @@ if "vector_store" not in st.session_state:
     st.session_state.vector_store = None
 
 
-with st.sidebar:
-    st.title("App Steps:")
-    st.markdown("""
-    1. Data Ingestion
-    2. Chunking
-    3. Embedding
-    4. Chatting
-    """)
-
-
 # Main UI Layout
 st.title("Transcript-to-Chat: An Interactive RAG Playground")
 st.markdown("""

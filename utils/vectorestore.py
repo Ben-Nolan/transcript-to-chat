@@ -4,7 +4,6 @@ from langchain_core.vectorstores import VectorStore
 from langchain_huggingface import HuggingFaceEmbeddings
 
 
-@st.cache_resource(show_spinner=False)
 def create_vector_store(chunks: list[str]) -> VectorStore:
     """
     Convert chunks into vectors and store them in an in-memory ChromaDB
