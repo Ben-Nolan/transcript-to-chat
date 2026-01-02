@@ -1,7 +1,7 @@
 import re
-import streamlit as st
 from typing import NamedTuple
 
+import streamlit as st
 from youtube_transcript_api import (
     NoTranscriptFound,
     TranscriptsDisabled,
@@ -9,6 +9,7 @@ from youtube_transcript_api import (
 )
 from youtube_transcript_api.formatters import TextFormatter
 from youtube_transcript_api.proxies import WebshareProxyConfig
+
 
 class TranscriptResponse(NamedTuple):
     text: str
