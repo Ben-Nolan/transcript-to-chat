@@ -3,8 +3,9 @@ import streamlit as st
 from dotenv import load_dotenv
 
 from utils.chunking import chunk_text
+from utils.dialogs import overwrite_vectorstore_dialog
 from utils.llm import get_rag_chain
-from utils.vectorestore import create_vector_store
+from utils.vectorestore import create_vector_store, get_embedding_model
 from utils.youtube import get_transcript_text
 
 load_dotenv()
@@ -35,16 +36,20 @@ with tab1:
     video_url = st.text_input("Paste Youtube URL here:",
                               placeholder="https://www.youtube.com/watch?v...")
     if st.button("Fetch Transcript"):
-        st.session_state.transcript, transcript_type = get_transcript_text(video_url)
-        st.success(f"Transcript loaded! (Transcript created from {transcript_type})")
-
-        if st.session_state.transcript:
-            st.subheader("Edit/Review Transcript")
-            st.session_state.transcript = st.text_area(
-                "Clean up the text before chunking:",
-                value=st.session_state.transcript,
-                height=300
+        with st.spinner("Pulling Video Transcript..."):
+            st.session_state.transcript, transcript_type = (
+                get_transcript_text(video_url)
             )
+            st.success("Transcript loaded! "
+                       f"(Transcript created from {transcript_type})")
+
+    if st.session_state.transcript:
+        st.subheader("Edit/Review Transcript")
+        st.session_state.transcript = st.text_area(
+            "Clean up the text (if necessary) before chunking:",
+            value=st.session_state.transcript,
+            height=300
+        )
 
 with tab2:
     st.header("Step 2: Recursive Chunking")
@@ -95,20 +100,23 @@ with tab3:
                  "vectors using 'all-MiniLM-L6-v2'."))
     
         if st.button("Generate Vector Store"):
-            with st.spinner("Transforming text into vectors..."):
-                st.session_state.vector_store = create_vector_store((st.session_state
-                                                                    .chunks))
-                st.success("Vector Store Created! Your transcript is now searchable!")
+            if st.session_state.vector_store is not None:
+                overwrite_vectorstore_dialog(create_vector_store,
+                                             st.session_state.chunks)
+            else:
+                with st.spinner("Transforming text into vectors..."):
+                    st.session_state.vector_store = (
+                        create_vector_store((st.session_state.chunks))
+                        )
+                    st.success("Vector Store Created!"
+                               "Your transcript is now searchable!")
         
         if st.session_state.vector_store:
             st.subheader("What does a Vector look like?")
             sample_text = st.session_state.chunks[0][:50] + "..."
             st.write(f"**Text Chunk:** {sample_text}")
 
-            from langchain_huggingface import HuggingFaceEmbeddings
-            model = HuggingFaceEmbeddings(
-                model_name="sentence-transformers/all-MiniLM-L6-v2"
-                )
+            model = get_embedding_model()
             sample_vector = model.embed_query(st.session_state.chunks[0])
             st.write(f"**Vector (first 10 dimensions of {len(sample_vector)}):**)")
             st.json(sample_vector[:10])
